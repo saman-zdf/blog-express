@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
-
 const app = express();
+const blogRouter = require('./router/blogRouter');
+const connectDB = require('./db/connect');
 
 const PORT = process.env.PORT || 5000;
 
@@ -8,10 +10,16 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 // import router
-const blogRouter = require('./router/blogRouter');
 
 app.use('/api/v1/blogs', blogRouter);
 
-app.listen(PORT, () => {
-  console.log(`server listening on port ${PORT}`);
-});
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
+    app.listen(PORT, () => console.log(`server listening on port ${PORT}`));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
